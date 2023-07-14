@@ -1,9 +1,17 @@
 const Listing = require('../models/Listing')
 
 const getListings = async (request, response) => {
-  // Find username
-  // Check auth
-  
+  const userId = request.user._id
+  const foundListings = await Listing.find({ userId }).exec()
+
+  try {
+    if (!userId) {
+      throw Error('Authorisation required')
+    }
+    response.send({ message: 'Your listings displayed!', listing: foundListings })
+  } catch (error) {
+    return response.status(500).json({ error: error.message })
+  }
 }
 
 const createListing = async (request, response) => {
@@ -70,6 +78,7 @@ const updateListing = async (request, response) => {
     return response.status(500).json({ error: error.message })
   }
 }
+
 const deleteListing = async (request, response) => {
   const listingId = request.params.id
   const userId = request.user._id
@@ -96,4 +105,4 @@ const deleteListing = async (request, response) => {
   }
 }
 
-module.exports = { createListing, updateListing, deleteListing }
+module.exports = { createListing, updateListing, deleteListing, getListings }
