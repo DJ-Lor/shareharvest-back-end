@@ -1,6 +1,10 @@
 const Listing = require('../models/Listing')
+const Comment = require('../models/Comment')
 
 const getListings = async (request, response) => {
+  // By default return all user listings
+  // If query params present - use title, postcode and category search
+
   const userId = request.user._id
   const foundListings = await Listing.find({ userId }).exec()
 
@@ -8,7 +12,7 @@ const getListings = async (request, response) => {
     if (!userId) {
       throw Error('Authorisation required')
     }
-    response.send({ message: 'Your listings displayed!', listing: foundListings })
+    response.send({ listings: foundListings })
   } catch (error) {
     return response.status(500).json({ error: error.message })
   }
@@ -73,7 +77,7 @@ const updateListing = async (request, response) => {
       throw new Error('You are not authorised to edit this listing')
     }
     const updatedListing = await Listing.findByIdAndUpdate(listingId, newListingData, { new: true })
-    response.send({ message: 'list updated!', listing: updatedListing })
+    response.send({ listing: updatedListing })
   } catch (error) {
     return response.status(500).json({ error: error.message })
   }
@@ -99,10 +103,33 @@ const deleteListing = async (request, response) => {
       throw new Error('You are not authorised to edit this listing')
     }
     await Listing.findByIdAndDelete(listingId, { new: true })
-    response.send({ message: 'listing deleted!' })
+    response.send({ message: 'success' })
   } catch (error) {
     return response.status(500).json({ error: error.message })
   }
 }
 
-module.exports = { createListing, updateListing, deleteListing, getListings }
+const createComment = async (request, response) => {
+  const listingId = request.params.id
+  const comment = request.body.message
+
+  // TODO: Confirm listing exists
+
+  try {
+    if (!comment) {
+      throw Error('Message input required')
+    }
+    const newComment = new Comment({
+      comment,
+      listingId,
+      userId: request.user._id,
+      createdAt: Date.now()
+    })
+    await newComment.save()
+    return response.json({ comment: newComment })
+  } catch (error) {
+    return response.status(500).json({ error: error.message })
+  }
+}
+
+module.exports = { createListing, updateListing, deleteListing, getListings, createComment }

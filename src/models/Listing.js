@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 
-const CommentSchema = new mongoose.Schema({ userId: String, message: String })
 const ListingSchema = new mongoose.Schema({
   category: {
     type: String,
@@ -17,10 +16,8 @@ const ListingSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: true
-  },
-  comments: {
-    type: [CommentSchema]
+    required: true,
+    maxlength: 1000
   },
   createdAt: {
     type: Date,
@@ -28,7 +25,8 @@ const ListingSchema = new mongoose.Schema({
   },
   userId: {
     type: mongoose.Types.ObjectId,
-    required: true
+    required: true,
+    ref: 'User'
   }
 })
 
