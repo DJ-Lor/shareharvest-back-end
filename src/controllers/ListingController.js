@@ -50,6 +50,34 @@ const getListings = async (request, response) => {
   }
 }
 
+const getListing = async (request, response) => {
+  const listingId = request.params.id
+  const userId = request.user._id
+
+  try {
+    if (!listingId) {
+      throw Error('Listing not found')
+    }
+    if (!userId) {
+      throw Error('Authorisation required')
+    }
+
+    // Check if the user owns the listing
+    const listing = await Listing.findById(listingId)
+    if (!listing) {
+      throw new Error('Listing not found')
+    }
+    if (listing.userId.toString() !== userId.toString()) {
+      throw new Error('You are not authorised to edit this listing')
+    }
+    // Else display the listId details
+    const getListing = await Listing.findById(listingId)
+    response.send({ listing: getListing })
+  } catch (error) {
+    return response.status(500).json({ error: error.message })
+  }
+}
+
 const createListing = async (request, response) => {
   const category = request.body.category
   const postcode = request.body.postcode
@@ -143,11 +171,13 @@ const deleteListing = async (request, response) => {
 
 const createComment = async (request, response) => {
   const listingId = request.params.id
-  const comment = request.body.message
-
-  // TODO: Confirm listing exists
+  const comment = request.body.comment
 
   try {
+    // Confirm listing exists
+    if (!listingId) {
+      throw Error('Listing not found')
+    }
     if (!comment) {
       throw Error('Message input required')
     }
@@ -164,4 +194,34 @@ const createComment = async (request, response) => {
   }
 }
 
-module.exports = { createListing, updateListing, deleteListing, getListings, createComment }
+const getComments = async (request, response) => {
+  // find the listingId
+  // ensure a user is logged in
+  // load all comments related to listingId
+
+  const listingId = request.params.id
+  const userId = request.user._id
+
+  try {
+    if (!listingId) {
+      throw Error('Listing not found')
+    }
+    if (!userId) {
+      throw Error('Authorisation required')
+    }
+
+    // Display the comments list
+    const getListing = await Listing.findById(listingId)
+    if (!getListing) {
+      throw new Error('Listing not found')
+    }
+    // Access comments based on listId
+    const getComments = await Comment.find({ listingId }).populate('userId')
+
+    response.send({ listing: getListing, comments: getComments })
+  } catch (error) {
+    return response.status(500).json({ error: error.message })
+  }
+}
+
+module.exports = { createListing, updateListing, deleteListing, getListings, createComment, getListing, getComments }
