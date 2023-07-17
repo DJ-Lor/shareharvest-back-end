@@ -30,6 +30,8 @@ const ListingSchema = new mongoose.Schema({
   }
 })
 
+ListingSchema.index({ title: 'text' })
+
 const Listing = mongoose.model('Listing', ListingSchema)
 
 module.exports = Listing

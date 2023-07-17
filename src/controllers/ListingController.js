@@ -4,13 +4,36 @@ const Comment = require('../models/Comment')
 const getListings = async (request, response) => {
   // By default return all user listings
   // If query params present - use title, postcode and category search
-
   const userId = request.user._id
-  const foundListings = await Listing.find({ userId }).exec()
+  const category = request.query.category
+  const postcode = request.query.postcode
+  const title = request.query.title
+
+  const query = {}
+
+  if (category) {
+    query.category = category
+  }
+
+  if (postcode) {
+    query.postcode = postcode
+  }
+
+  if (title) {
+    query.title = { $regex: new RegExp(title, 'i') }
+  }
 
   try {
     if (!userId) {
       throw Error('Authorisation required')
+    }
+
+    let foundListings
+
+    if (query) {
+      foundListings = await Listing.find(query).exec()
+    } else {
+      foundListings = await Listing.find().exec()
     }
     response.send({ listings: foundListings })
   } catch (error) {
