@@ -8,6 +8,9 @@ const getListings = async (request, response) => {
   const category = request.query.category
   const postcode = request.query.postcode
   const title = request.query.title
+  // Account for pagination
+  const page = parseInt(request.query.page) || 1
+  const limit = parseInt(request.query.limit) || 8
 
   const query = {}
 
@@ -31,9 +34,15 @@ const getListings = async (request, response) => {
     let foundListings
 
     if (query) {
-      foundListings = await Listing.find(query).exec()
+      foundListings = await Listing.find(query)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec()
     } else {
-      foundListings = await Listing.find().exec()
+      foundListings = await Listing.find()
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec()
     }
     response.send({ listings: foundListings })
   } catch (error) {
