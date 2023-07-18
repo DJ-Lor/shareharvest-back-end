@@ -50,33 +50,63 @@ const getListings = async (request, response) => {
   }
 }
 
-const getmyListings = async (request, response) => {
-  const listingId = request.params.id
+const getMyListings = async (request, response) => {
+  // Make sure you have access to userID
+  // Using userID populate the listing associated to the id
   const userId = request.user._id
 
+  // Account for pagination
+  const page = parseInt(request.query.page) || 1
+  const limit = parseInt(request.query.limit) || 6
   try {
-    if (!listingId) {
-      throw Error('Listing not found')
-    }
     if (!userId) {
       throw Error('Authorisation required')
     }
 
-    // Check if the user owns the listing
-    const listing = await Listing.findById(listingId)
-    if (!listing) {
-      throw new Error('Listing not found')
+    let foundMyListings
+
+    if (userId) {
+      foundMyListings = await Listing.find({ userId })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec()
+    } else {
+      foundMyListings = await Listing.find()
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec()
     }
-    if (listing.userId.toString() !== userId.toString()) {
-      throw new Error('You are not authorised to edit this listing')
-    }
-    // Else display the listId details
-    const getListing = await Listing.findById(listingId)
-    response.send({ listing: getListing })
+    response.send({ listings: foundMyListings })
   } catch (error) {
     return response.status(500).json({ error: error.message })
   }
 }
+//   const listingId = request.params.id
+//   const userId = request.user._id
+
+//   try {
+//     if (!listingId) {
+//       throw Error('Listing not found')
+//     }
+//     if (!userId) {
+//       throw Error('Authorisation required')
+//     }
+
+//     // Check if the user owns the listing
+//     const listing = await Listing.findById(listingId)
+//     if (!listing) {
+//       throw new Error('Listing not found')
+//     }
+//     if (listing.userId.toString() !== userId.toString()) {
+//       throw new Error('You are not authorised to edit this listing')
+//     }
+//     // Else display the listId details
+//     const getListing = await Listing.findById(listingId)
+//     response.send({ listing: getListing })
+//   } catch (error) {
+//     return response.status(500).json({ error: error.message })
+//   }
+// }
 
 const createListing = async (request, response) => {
   const category = request.body.category
@@ -224,4 +254,4 @@ const getComments = async (request, response) => {
   }
 }
 
-module.exports = { createListing, updateListing, deleteListing, getListings, createComment, getmyListings, getComments }
+module.exports = { createListing, updateListing, deleteListing, getListings, createComment, getMyListings, getComments }
