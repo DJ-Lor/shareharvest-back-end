@@ -10,7 +10,7 @@ const getListings = async (request, response) => {
   const title = request.query.title
   // Account for pagination
   const page = parseInt(request.query.page) || 1
-  const limit = parseInt(request.query.limit) || 8
+  const limit = parseInt(request.query.limit) || 6
 
   const query = {}
 
@@ -50,7 +50,7 @@ const getListings = async (request, response) => {
   }
 }
 
-const getListing = async (request, response) => {
+const getmyListings = async (request, response) => {
   const listingId = request.params.id
   const userId = request.user._id
 
@@ -224,4 +224,4 @@ const getComments = async (request, response) => {
   }
 }
 
-module.exports = { createListing, updateListing, deleteListing, getListings, createComment, getListing, getComments }
+module.exports = { createListing, updateListing, deleteListing, getListings, createComment, getmyListings, getComments }
