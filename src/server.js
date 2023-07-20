@@ -58,6 +58,28 @@ app.get('/', (request, response) => {
   })
 })
 
+// Add route to handle newsletter sign-up
+const Subscriber = require('./models/Subscriber')
+
+app.post('/subscribe', async (req, res) => {
+  try {
+    const { email } = req.body
+    // Check if the email already exists in the Subscriber collection
+    const existingSubscriber = await Subscriber.findOne({ email });
+
+    if (existingSubscriber) {
+      return res.status(409).json({ error: 'Email already exists' })
+    }
+    // Create a new subscriber
+    const subscriber = new Subscriber({ email })
+    await subscriber.save()
+
+    res.status(201).json({ message: 'Subscriber added successfully' })
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to add subscriber' })
+  }
+})
+
 const userRoutes = require('./routes/UserRoutes')
 const listingRoutes = require('./routes/ListingRoutes')
 app.use('/users', userRoutes)

@@ -9,9 +9,8 @@ const getListings = async (request, response) => {
   const postcode = request.query.postcode
   const title = request.query.title
   // Account for pagination
-  const page = parseInt(request.query.page) || 1
-  const limit = parseInt(request.query.limit) || 6
-
+  const page = parseInt(request.query.page)
+  const limit = parseInt(request.query.limit) || 2
   const query = {}
 
   if (category) {
@@ -30,21 +29,25 @@ const getListings = async (request, response) => {
     if (!userId) {
       throw Error('Authorisation required')
     }
+    // Variables for pagination
+    const totalListings = await Listing.countDocuments(query)
+    const responseTotalPages = Math.ceil(totalListings / limit)
 
     let foundListings
+    const pageCalc = page - 1
 
     if (query) {
       foundListings = await Listing.find(query)
-        .skip((page - 1) * limit)
+        .skip(pageCalc * limit)
         .limit(limit)
         .exec()
     } else {
       foundListings = await Listing.find()
-        .skip((page - 1) * limit)
+        .skip(pageCalc * limit)
         .limit(limit)
         .exec()
     }
-    response.send({ listings: foundListings })
+    response.send({ listings: foundListings, totalPages: responseTotalPages })
   } catch (error) {
     return response.status(500).json({ error: error.message })
   }
@@ -81,32 +84,6 @@ const getMyListings = async (request, response) => {
     return response.status(500).json({ error: error.message })
   }
 }
-//   const listingId = request.params.id
-//   const userId = request.user._id
-
-//   try {
-//     if (!listingId) {
-//       throw Error('Listing not found')
-//     }
-//     if (!userId) {
-//       throw Error('Authorisation required')
-//     }
-
-//     // Check if the user owns the listing
-//     const listing = await Listing.findById(listingId)
-//     if (!listing) {
-//       throw new Error('Listing not found')
-//     }
-//     if (listing.userId.toString() !== userId.toString()) {
-//       throw new Error('You are not authorised to edit this listing')
-//     }
-//     // Else display the listId details
-//     const getListing = await Listing.findById(listingId)
-//     response.send({ listing: getListing })
-//   } catch (error) {
-//     return response.status(500).json({ error: error.message })
-//   }
-// }
 
 const createListing = async (request, response) => {
   const category = request.body.category
@@ -190,10 +167,11 @@ const deleteListing = async (request, response) => {
       throw new Error('Listing not found')
     }
     if (listing.userId.toString() !== userId.toString()) {
-      throw new Error('You are not authorised to edit this listing')
+      throw new Error('You are not authorised to delete this listing')
     }
     await Listing.findByIdAndDelete(listingId, { new: true })
-    response.send({ message: 'success' })
+    await Comment.deleteMany({ listingId })
+    response.send({ message: 'Delete success' })
   } catch (error) {
     return response.status(500).json({ error: error.message })
   }
@@ -217,14 +195,15 @@ const createComment = async (request, response) => {
       userId: request.user._id,
       createdAt: Date.now()
     })
-    await newComment.save()
-    return response.json({ comment: newComment })
+    const createdComment = await newComment.save()
+    const commentData = await Comment.findById(createdComment._id).populate('userId')
+    return response.json({ comment: commentData })
   } catch (error) {
     return response.status(500).json({ error: error.message })
   }
 }
 
-const getComments = async (request, response) => {
+const getListing = async (request, response) => {
   // find the listingId
   // ensure a user is logged in
   // load all comments related to listingId
@@ -254,4 +233,4 @@ const getComments = async (request, response) => {
   }
 }
 
-module.exports = { createListing, updateListing, deleteListing, getListings, createComment, getMyListings, getComments }
+module.exports = { createListing, updateListing, deleteListing, getListings, createComment, getMyListings, getListing }

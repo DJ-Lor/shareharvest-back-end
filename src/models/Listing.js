@@ -12,11 +12,13 @@ const ListingSchema = new mongoose.Schema({
   },
   title: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   description: {
     type: String,
     required: true,
+    trim: true,
     maxlength: 1000
   },
   createdAt: {
