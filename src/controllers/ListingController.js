@@ -10,7 +10,7 @@ const getListings = async (request, response) => {
   const title = request.query.title
   // Account for pagination
   const page = parseInt(request.query.page)
-  const limit = parseInt(request.query.limit) || 2
+  const limit = parseInt(request.query.limit) || 6
   const query = {}
 
   if (category) {
@@ -59,27 +59,26 @@ const getMyListings = async (request, response) => {
   const userId = request.user._id
 
   // Account for pagination
-  const page = parseInt(request.query.page) || 1
-  const limit = parseInt(request.query.limit) || 6
+  const page = parseInt(request.query.page)
+  const limit = parseInt(request.query.limit) || 3
   try {
     if (!userId) {
       throw Error('Authorisation required')
     }
 
+    // Variables for pagination
+    const totalListings = await Listing.countDocuments({ userId })
+    const responseTotalPages = Math.ceil(totalListings / limit)
+    const pageCalc = page - 1
     let foundMyListings
 
     if (userId) {
       foundMyListings = await Listing.find({ userId })
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .exec()
-    } else {
-      foundMyListings = await Listing.find()
-        .skip((page - 1) * limit)
+        .skip(pageCalc * limit)
         .limit(limit)
         .exec()
     }
-    response.send({ listings: foundMyListings })
+    response.send({ listings: foundMyListings, totalPages: responseTotalPages })
   } catch (error) {
     return response.status(500).json({ error: error.message })
   }
