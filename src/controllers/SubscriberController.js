@@ -1,8 +1,14 @@
 const Subscriber = require('../models/Subscriber')
+const validator = require('email-validator')
 
 const subscribeEmail = async (request, response) => {
   try {
     const { email } = request.body
+
+    // Validate the email before saving
+    if (!validator.validate(email)) {
+      return response.status(400).json({ error: 'Invalid email address!' })
+    }
     // Check if the email already exists in the Subscriber collection
     const existingSubscriber = await Subscriber.findOne({ email })
 
