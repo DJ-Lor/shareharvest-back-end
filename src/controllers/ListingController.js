@@ -153,6 +153,10 @@ const updateListing = async (request, response) => {
     const updatedListing = await Listing.findByIdAndUpdate(listingId, newListingData, { new: true })
     response.send({ listing: updatedListing })
   } catch (error) {
+    // Handle different types of errors
+    if (error.name === 'CastError' && error.kind === 'ObjectId') {
+      return response.status(404).json({ error: 'Invalid Listing ID' });
+    }
     return response.status(500).json({ error: error.message })
   }
 }
