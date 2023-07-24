@@ -20,7 +20,7 @@ const ListingSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
-    maxlength: 1000
+    maxlength: 500
   },
   createdAt: {
     type: Date,
