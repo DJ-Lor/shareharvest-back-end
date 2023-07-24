@@ -1,5 +1,6 @@
 const User = require('../models/User')
 const { hashPassword, generateJWT, validateHashedData } = require('../services/auth')
+const validator = require('email-validator')
 
 // User Sign Up Route
 const signup = async (request, response) => {
@@ -9,6 +10,10 @@ const signup = async (request, response) => {
   const postcode = request.body.postcode
 
   try {
+    // Validate the email before saving
+    if (!validator.validate(email)) {
+      return response.status(400).json({ error: 'Invalid email address!' })
+    }
     // All fields need completed
     if (!username || !email || !password || !postcode) {
       throw Error('All fields are required')
