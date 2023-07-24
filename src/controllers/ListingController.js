@@ -155,43 +155,43 @@ const updateListing = async (request, response) => {
   } catch (error) {
     // Handle different types of errors
     if (error.name === 'CastError' && error.kind === 'ObjectId') {
-      return response.status(404).json({ error: 'Invalid Listing ID' });
+      return response.status(404).json({ error: 'Invalid Listing ID' })
     }
     return response.status(500).json({ error: error.message })
   }
 }
 
 const deleteListing = async (request, response) => {
-  const listingId = request.params.id;
-  const userId = request.user._id;
+  const listingId = request.params.id
+  const userId = request.user._id
 
   try {
     if (!listingId) {
-      throw new Error('Listing ID not provided');
+      throw new Error('Listing ID not provided')
     }
     if (!userId) {
-      throw new Error('Authorization required');
+      throw new Error('Authorization required')
     }
 
     // Check if the user owns the listing
-    const listing = await Listing.findById(listingId);
+    const listing = await Listing.findById(listingId)
     if (!listing) {
-      throw new Error('Listing not found');
+      throw new Error('Listing not found')
     }
     if (listing.userId.toString() !== userId.toString()) {
-      throw new Error('You are not authorized to delete this listing');
+      throw new Error('You are not authorized to delete this listing')
     }
 
     // If all checks pass, proceed with the deletion
-    await Listing.findByIdAndDelete(listingId);
-    await Comment.deleteMany({ listingId });
-    response.send({ message: 'Delete success' });
+    await Listing.findByIdAndDelete(listingId)
+    await Comment.deleteMany({ listingId })
+    response.send({ message: 'Delete success' })
   } catch (error) {
     // Handle different types of errors
     if (error.name === 'CastError' && error.kind === 'ObjectId') {
-      return response.status(404).json({ error: 'Invalid Listing ID' });
+      return response.status(404).json({ error: 'Invalid Listing ID' })
     }
-    return response.status(500).json({ error: error.message });
+    return response.status(500).json({ error: error.message })
   }
 }
 
@@ -200,6 +200,10 @@ const createComment = async (request, response) => {
   const comment = request.body.comment
 
   try {
+    // Validate the username before saving
+    if (comment.length > 150) {
+      return response.status(400).json({ error: 'Comments have a maximum of 150 characters!' })
+    }
     // Confirm listing exists
     if (!listingId) {
       throw Error('Listing not found')
