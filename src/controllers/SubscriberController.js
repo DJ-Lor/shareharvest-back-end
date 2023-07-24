@@ -2,7 +2,7 @@ const Subscriber = require('../models/Subscriber')
 const validator = require('email-validator')
 
 const subscribeEmail = async (request, response) => {
-  const { email } = request.body
+  const email = request.body.email
 
   try {
     // Validate the email before saving
