@@ -14,6 +14,14 @@ const signup = async (request, response) => {
     if (!validator.validate(email)) {
       return response.status(400).json({ error: 'Invalid email address!' })
     }
+    // Validate the username before saving
+    if (username.length < 2) {
+      return response.status(400).json({ error: 'Username must be at least 2 characters long!'})
+    }
+    // Validate the username before saving
+    if (password.length < 4) {
+      return response.status(400).json({ error: 'Password must be at least 4 characters long!'})
+    }
     // All fields need completed
     if (!username || !email || !password || !postcode) {
       throw Error('All fields are required')
