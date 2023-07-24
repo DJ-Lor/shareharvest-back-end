@@ -13,7 +13,8 @@ const ListingSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    minlength: 4
   },
   description: {
     type: String,

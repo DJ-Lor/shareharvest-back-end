@@ -91,6 +91,14 @@ const createListing = async (request, response) => {
   const description = request.body.description
 
   try {
+    // Validate the username before saving
+    if (title.length < 4) {
+      return response.status(400).json({ error: 'Title must be at least 4 characters long!' })
+    }
+    // Validate the username before saving
+    if (description.length < 4 || description.length > 1000) {
+      return response.status(400).json({ error: 'Description must be at least 4 characters long and maximum of 1000 characters!' })
+    }
     // All fields need completed
     if (!category || !postcode || !title || !description) {
       throw Error('All fields are required')
