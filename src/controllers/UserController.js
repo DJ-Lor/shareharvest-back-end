@@ -41,7 +41,12 @@ const signup = async (request, response) => {
     const token = await generateJWT({ userId: newUser._id })
     return response.json({ token })
   } catch (error) {
-    return response.status(500).json({ error: error.message })
+    if (error.name === 'ValidationError') {
+      // Handle validation errors
+      const errors = Object.values(error.errors).map(err => err.message)
+      return response.status(400).json({ error: errors })
+    }
+    response.status(500).json({ error: error.message })
   }
 }
 
@@ -51,6 +56,10 @@ const login = async (request, response) => {
   const password = request.body.password
 
   try {
+    // Validate the email before login
+    if (!validator.validate(email)) {
+      return response.status(400).json({ error: 'Invalid email address!' })
+    }
     // Check if email and password were provided
     if (!email || !password) {
       throw Error('email and password required')
