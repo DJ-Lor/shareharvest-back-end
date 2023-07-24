@@ -2,9 +2,9 @@ const Subscriber = require('../models/Subscriber')
 const validator = require('email-validator')
 
 const subscribeEmail = async (request, response) => {
-  try {
-    const { email } = request.body
+  const { email } = request.body
 
+  try {
     // Validate the email before saving
     if (!validator.validate(email)) {
       return response.status(400).json({ error: 'Invalid email address!' })
