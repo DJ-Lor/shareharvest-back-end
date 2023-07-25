@@ -66,7 +66,7 @@ app.use('/listings', listingRoutes)
 app.use('/subscribe', subscriberRoutes)
 
 app.use('*', (request, response) => {
-  response.status(404)
+  response.sendStatus(404)
   response.json({
     message: 'Route not found',
     path: request.path
