@@ -8,6 +8,7 @@ describe('Home page route exists.', () => {
     const res = await request(app).get('/')
     expect(res.statusCode).toEqual(200)
   })
+
   it("The 'message' property exists and has data", async () => {
     const res = await request(app).get('/')
     expect(res.body).toHaveProperty('message')
