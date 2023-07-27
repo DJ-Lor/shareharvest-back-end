@@ -10,7 +10,7 @@
 - prod-backend: https://backend-shareharvest.onrender.com
 
 
-## General description and overview the application.
+## General description and overview of the application.
 
 ---
 
