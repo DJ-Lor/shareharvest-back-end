@@ -8,7 +8,7 @@ const { describe, it, expect } = require('@jest/globals')
 app.use('/listings', listingRoutes)
 
 // Test listing routes
-describe('Listing Routes CRUD', () => {
+describe('Listing Routes CRUD and comments', () => {
   let createdListingId // Variable to store the ID of the created listing
   it('should create a new listing', async () => {
     const token = getToken()
@@ -36,6 +36,40 @@ describe('Listing Routes CRUD', () => {
       .set('x-auth-token', `${token}`) // Set the Authorisation header with the token
     expect(res.statusCode).toEqual(200)
     expect(res.body).toHaveProperty('listing')
+  })
+  it('get listings view', async () => {
+    const token = getToken()
+    const res = await request(app)
+      .get('/listings')
+      .set('x-auth-token', `${token}`) // Set the Authorisation header with the token
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toHaveProperty('listings')
+  })
+  it('get my listing view', async () => {
+    const token = getToken()
+    const res = await request(app)
+      .get('/listings/mylistings')
+      .set('x-auth-token', `${token}`) // Set the Authorisation header with the token
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toHaveProperty('listings')
+  })
+  it('should create a new comment', async () => {
+    const token = getToken()
+    const createdComment = { comment: 'test commenting feature' }
+    const res = await request(app).post(`/listings/${createdListingId}/comments`)
+      .set('x-auth-token', token)
+      .send(createdComment)
+    expect(res.body).toHaveProperty('comment')
+    createdListingId = res.body.comment.listingId // Store the ID of the created comment
+  })
+  it('get comment view', async () => {
+    const token = getToken()
+    const listingId = createdListingId
+    console.log(listingId)
+    const res = await request(app)
+      .get(`/listings/${listingId}`)
+      .set('x-auth-token', `${token}`) // Set the Authorisation header with the token
+    expect(res.body).toHaveProperty('comments')
   })
   it('delete listing', async () => {
     const token = getToken()
