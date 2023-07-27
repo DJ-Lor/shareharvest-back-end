@@ -10,7 +10,7 @@ app.use('/users', userRoutes)
 // Test user routes
 describe('User Routes', () => {
   it('should create a new user', async () => {
-    const user = { username: 'testuser', email: 'testuserX@example.com', password: 'testpassword', postcode: '2035' }
+    const user = { username: 'testuser', email: 'testuserXX@example.com', password: 'testpassword', postcode: '2035' }
     const res = await request(app).post('/users/signup').send(user)
     expect(res.body).toHaveProperty('token')
   })
