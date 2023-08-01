@@ -89,6 +89,7 @@ const createListing = async (request, response) => {
   const postcode = request.body.postcode
   const title = request.body.title
   const description = request.body.description
+  const listingImage = request.body.listingImage
 
   try {
     // Validate the username before saving
@@ -104,11 +105,16 @@ const createListing = async (request, response) => {
       throw Error('All fields are required')
     }
 
+    if (!listingImage) {
+      throw Error('Image required')
+    }
+
     const newListing = new Listing({
       category,
       postcode,
       title,
       description,
+      listingImage,
       userId: request.user._id,
       createdAt: Date.now()
     })
