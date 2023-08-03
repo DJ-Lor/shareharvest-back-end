@@ -20,7 +20,7 @@ app.use(helmet.contentSecurityPolicy({
 
 const cors = require('cors')
 const corsOptions = {
-  // origin: ['https://shareharvest.onrender.com', 'https://dev-sharehavest.onrender.com'],
+  origin: ['https://shareharvest.onrender.com', 'https://dev-sharehavest.onrender.com', 'http://localhost:3002'],
   optionsSuccessStatus: 200
 }
 

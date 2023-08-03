@@ -22,7 +22,7 @@ const ListingSchema = new mongoose.Schema({
     trim: true,
     maxlength: 500
   },
-  listingImage: {
+  imageUrlsPulled: {
     type: String
   },
   createdAt: {

@@ -89,6 +89,7 @@ const createListing = async (request, response) => {
   const postcode = request.body.postcode
   const title = request.body.title
   const description = request.body.description
+  const imageUrlsPulled = request.body.imageUrlsPulled
 
   try {
     // Validate the username before saving
@@ -109,6 +110,7 @@ const createListing = async (request, response) => {
       postcode,
       title,
       description,
+      imageUrlsPulled,
       userId: request.user._id,
       createdAt: Date.now()
     })
