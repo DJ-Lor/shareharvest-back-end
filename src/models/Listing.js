@@ -23,7 +23,8 @@ const ListingSchema = new mongoose.Schema({
     maxlength: 500
   },
   imageUrlsPulled: {
-    type: String
+    type: [String],
+    required: true
   },
   createdAt: {
     type: Date,

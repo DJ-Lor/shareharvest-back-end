@@ -101,7 +101,7 @@ const createListing = async (request, response) => {
       return response.status(400).json({ error: 'Description must be at least 4 characters long and maximum of 500 characters!' })
     }
     // All fields need completed
-    if (!category || !postcode || !title || !description) {
+    if (!category || !postcode || !title || !description || !imageUrlsPulled) {
       throw Error('All fields are required')
     }
 
