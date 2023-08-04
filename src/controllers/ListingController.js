@@ -89,7 +89,8 @@ const createListing = async (request, response) => {
   const postcode = request.body.postcode
   const title = request.body.title
   const description = request.body.description
-  const imageUrlsPulled = request.body.imageUrlsPulled
+  // Future feature
+  // const imageUrlsPulled = request.body.imageUrlsPulled
 
   try {
     // Validate the username before saving
@@ -101,7 +102,7 @@ const createListing = async (request, response) => {
       return response.status(400).json({ error: 'Description must be at least 4 characters long and maximum of 500 characters!' })
     }
     // All fields need completed
-    if (!category || !postcode || !title || !description || !imageUrlsPulled) {
+    if (!category || !postcode || !title || !description) {
       throw Error('All fields are required')
     }
 
@@ -110,7 +111,6 @@ const createListing = async (request, response) => {
       postcode,
       title,
       description,
-      imageUrlsPulled,
       userId: request.user._id,
       createdAt: Date.now()
     })

@@ -22,10 +22,11 @@ const ListingSchema = new mongoose.Schema({
     trim: true,
     maxlength: 500
   },
-  imageUrlsPulled: {
-    type: [String],
-    required: true
-  },
+  // Future feautre
+  // imageUrlsPulled: {
+  //   type: [String],
+  //   required: true
+  // },
   createdAt: {
     type: Date,
     required: true
